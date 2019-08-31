@@ -1,10 +1,11 @@
 bl_info = {
     "name": "Viewport to SVG",
-    "version": (0, 2, 0, 1),
+    "version": (0, 2, 1),
     "blender": (2, 80, 0),
     "location": "View3D > Sidebar",
     "description": "Generate an SVG file from active view",
-    "category": "Import-Export"}
+    "category": "Import-Export",
+}
 
 import bpy, bmesh, os, math, time
 import mathutils as M, random as R, bpy_extras
@@ -126,10 +127,10 @@ class ExportSVG(bpy.types.Operator):
 
         def objeto_2_bm(context, obj, bm, convertir=False):
             if convertir:
-                tmp = obj.to_mesh(context.depsgraph, apply_modifiers=True) ###
+                tmp = obj.to_mesh() ###
                 tmp.transform(obj.matrix_world)
                 bm.from_mesh(tmp)
-                bpy.data.meshes.remove(tmp)
+                #bpy.data.meshes.remove(tmp)
             else:
                 if wm.disolver or wm.colapsar < 1:
                     mod = obj.modifiers.new('mod','DECIMATE') ###
@@ -140,10 +141,10 @@ class ExportSVG(bpy.types.Operator):
                     else:
                         mod.ratio = wm.colapsar
                 if obj.type == 'MESH':
-                    bm.from_object(obj, context.depsgraph)
+                    bm.from_object(obj, context.scene)
                     bm.transform(obj.matrix_world)
                 else:
-                    tmp = obj.to_mesh(context.depsgraph, apply_modifiers=True) ###
+                    tmp = obj.to_mesh() ###
                     tmp.transform(obj.matrix_world)
                     bm.from_mesh(tmp)
                     bpy.data.meshes.remove(tmp)
@@ -255,7 +256,7 @@ class ExportSVG(bpy.types.Operator):
             if wm.join_objs and len(sel) > 1:
                 bpy.ops.object.select_all(action='DESELECT')
                 for i, o in enumerate(sel):
-                    tmp = o.to_mesh(context.depsgraph, apply_modifiers=True) ###
+                    tmp = o.to_mesh() ###
                     tmp.transform(o.matrix_world)
                     if not i:
                         join = bpy.data.objects.new('join',tmp)
